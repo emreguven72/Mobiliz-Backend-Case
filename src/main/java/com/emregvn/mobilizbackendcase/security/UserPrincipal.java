@@ -14,6 +14,10 @@ public class UserPrincipal implements UserDetails {
 	
 	private final int userId;
 	private final String name;
+	private String surname;
+	private int companyId;
+	private String companyName;
+	private String role;
 	private final Collection<? extends GrantedAuthority> authorities;
 	
 	@Override

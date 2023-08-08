@@ -31,6 +31,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 		UserPrincipal principal = UserPrincipal.builder()
 				.userId(user.getUserId())
 				.name(user.getName())
+				.surname(user.getSurname())
+				.companyId(user.getCompanyId())
+				.companyName(user.getCompanyName())
 				.authorities(List.of(new SimpleGrantedAuthority(user.getRole())))
 				.build();
 		

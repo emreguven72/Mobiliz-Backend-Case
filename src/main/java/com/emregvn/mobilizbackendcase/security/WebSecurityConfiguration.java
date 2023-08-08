@@ -28,7 +28,9 @@ public class WebSecurityConfiguration {
 					.requestMatchers(
 							"/api/v1/demo/public"
 					).permitAll()
-					.requestMatchers("/api/v1/demo/admin").hasAuthority("Admin")
+					.requestMatchers(
+							"/api/v1/vehicle/create"
+					).hasAuthority("CompanyAdmin")
 					.anyRequest().authenticated()
 			).addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 		
