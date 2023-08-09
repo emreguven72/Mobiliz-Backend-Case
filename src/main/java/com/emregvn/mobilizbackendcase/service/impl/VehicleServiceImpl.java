@@ -1,6 +1,5 @@
 package com.emregvn.mobilizbackendcase.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +34,7 @@ public class VehicleServiceImpl implements VehicleService {
 	private final FleetService fleetService;
 	private final GroupService groupService;
 	private final VehicleServiceBusinessRules vehicleServiceBusinessRules;
+	String globalVehicleTree = "";
 	
 	@Override
 	public Optional<GetVehicleResponse> getByPlateNumber(String plateNumber) {
@@ -178,24 +178,37 @@ public class VehicleServiceImpl implements VehicleService {
 		Company company = companyService.getByCompanyName(principal.getCompanyName()).orElseThrow();
 		
 		System.out.print(company.getCompanyName() + "\r");
+		globalVehicleTree += company.getCompanyName() + "\r";
 		company.getRegions().forEach(r -> {
-			System.out.print(" |-" + r.getName() + "\r");
+			if(!r.getVehicles().isEmpty()) {
+				System.out.print(" |-" + r.getName() + "\r");
+				globalVehicleTree += " |-" + r.getName() + "\r";
+			}
 			r.getVehicles().forEach(v -> {
 				if(v.getFleet() == null && v.getGroup() == null) {
 					System.out.print(" |   |-" + v.getPlateNumber() + "\r");
+					globalVehicleTree += " |   |-" + v.getPlateNumber() + "\r";
 				}
 			});
 			r.getFleets().forEach(f -> {
-				System.out.print(" |   |-" + f.getName() + "\r");
+				if(!f.getVehicles().isEmpty()) {					
+					System.out.print(" |   |-" + f.getName() + "\r");
+					globalVehicleTree += " |   |-" + f.getName() + "\r";
+				}
 				f.getVehicles().forEach(v -> {
 					if(v.getGroup() == null) {
 						System.out.print(" |      |-" + v.getPlateNumber() + "\r");
+						globalVehicleTree += " |      |-" + v.getPlateNumber() + "\r";
 					}
 				});
 				f.getGroups().forEach(g -> {
-					System.out.print(" |      |-" + g.getName() + "\r");
+					if(!g.getVehicles().isEmpty()) {						
+						System.out.print(" |      |-" + g.getName() + "\r");
+						globalVehicleTree += " |      |-" + g.getName() + "\r";
+					}
 					g.getVehicles().forEach(v -> {
 						System.out.print(" |         |-" + v.getPlateNumber() + "\r");
+						globalVehicleTree += " |         |-" + v.getPlateNumber() + "\r";
 					});
 				});
 			});
@@ -203,39 +216,15 @@ public class VehicleServiceImpl implements VehicleService {
 		company.getVehicles().forEach(v -> {
 			if(v.getRegion() == null && v.getFleet() == null && v.getGroup() == null) {
 				System.out.print(" |-" + v.getPlateNumber() + "\r");
+				globalVehicleTree += " |-" + v.getPlateNumber() + "\r";
 			}
 		});
 		System.out.print("\r");
 		
+		String vehicleTree = globalVehicleTree;
+		globalVehicleTree = "";
 		
-		
-//		Mulakat A.S.
-//		 |-Marmara
-//		 |   |-Istanbul Filo
-//		 |      |-Avrupa Grubu
-//		 |         |-34BE030
-//		 |		   |-34EM141
-//		 |   |-Edirne Filo
-//		 |      |-08EC421
-//		 |      |-08AB576
-//		 |-Ege
-//		    |-27AB321
-		
-		String vehicleTree = """
-			%s
-			 |-%s
-			 |   |-%s
-			 |      |-%s
-			 |         |-34BE030
-			 |		   |-34EM141
-			 |   |-Edirne Filo
-			 |      |-08EC421
-			 |      |-08AB576
-			 |-Ege
-			    |-27AB321
-		""";
-		
-		return String.format(vehicleTree, "Mulakat A.S.", "Marmara", "Istanbul Filo", "Avrupa Grubu");
+		return vehicleTree;
 	}
 
 	@Override
