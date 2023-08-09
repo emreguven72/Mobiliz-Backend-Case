@@ -1,6 +1,7 @@
 package com.emregvn.mobilizbackendcase.security;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +19,10 @@ public class UserPrincipal implements UserDetails {
 	private int companyId;
 	private String companyName;
 	private String role;
+	private List<String> regionAuthorizations;
+	private List<String> fleetAuthorizations;
+	private List<String> groupAuthorizations;
+	private List<String> vehicleAuthorizations;
 	private final Collection<? extends GrantedAuthority> authorities;
 	
 	@Override

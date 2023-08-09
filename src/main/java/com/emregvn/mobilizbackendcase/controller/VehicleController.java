@@ -36,14 +36,19 @@ public class VehicleController {
 		return vehicleService.getByPlateNumber(plateNumber).orElseThrow();
 	}
 	
-	@GetMapping("/get-by-group")
-	public List<GetVehicleResponse> getByGroup(@RequestParam @Validated String group) {
-		return vehicleService.getByGroup(group);
+	@GetMapping("/get-by-region")
+	public List<GetVehicleResponse> getByRegion() {
+		return vehicleService.getByRegion();
 	}
 	
 	@GetMapping("/get-by-fleet")
-	public List<GetVehicleResponse> getByFleet(@RequestParam @Validated String fleet) {
-		return vehicleService.getByFleet(fleet);
+	public List<GetVehicleResponse> getByFleet() {
+		return vehicleService.getByFleet();
+	}
+	
+	@GetMapping("/get-by-group")
+	public List<GetVehicleResponse> getByGroup() {
+		return vehicleService.getByGroup();
 	}
 	
 	@PostMapping("/create")

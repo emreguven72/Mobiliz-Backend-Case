@@ -14,8 +14,9 @@ public class GetVehicleResponse {
 	private String brand;
 	private String model;
 	private int modelYear;
-	private String group;
-	private String fleet;
 	private String companyName;
+	private String regionName;
+	private String fleetName;
+	private String groupName;
 
 }

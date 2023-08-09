@@ -11,11 +11,13 @@ public interface VehicleService {
 
 	Optional<GetVehicleResponse> getByPlateNumber(String plateNumber);
 	
-	List<GetVehicleResponse> getByGroup(String group);
-	
-	List<GetVehicleResponse> getByFleet(String fleet);
-	
 	List<GetVehicleResponse> getByCompany();
+	
+	List<GetVehicleResponse> getByRegion();
+	
+	List<GetVehicleResponse> getByFleet();
+	
+	List<GetVehicleResponse> getByGroup();
 	
 	void create(CreateVehicleRequest createVehicleRequest);
 	

@@ -1,5 +1,7 @@
 package com.emregvn.mobilizbackendcase.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,50 +23,25 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "vehicles")
-public class Vehicle {
+@Table(name = "regions")
+public class Region {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
-	@Column(name = "vehicleId")
-	private int vehicleId;
+	@Column(name = "regionId")
+	private int regionId;
 	
-	//plaka
-	@Column(name = "plateNumber")
-	private String plateNumber;
-	
-	//Şase numarası
-	@Column(name = "chassisNumber")
-	private String chassisNumber;
-	
-	//etiket
-	@Column(name = "label")
-	private String label;
-	
-	//marka
-	@Column(name = "brand")
-	private String brand;
-	
-	@Column(name = "model")
-	private String model;
-	
-	@Column(name = "modelYear")
-	private int modelYear;
+	@Column(name = "name")
+	private String name;
 	
 	@ManyToOne()
 	@JoinColumn(name = "companyId")
 	private Company company;
 	
-	@ManyToOne()
-	@JoinColumn(name = "regionId")
-	private Region region;
+	@OneToMany(mappedBy = "region")
+	private List<Fleet> fleets;
 	
-	@ManyToOne()
-	@JoinColumn(name = "fleetId")
-	private Fleet fleet;
-	
-	@ManyToOne()
-	@JoinColumn(name = "groupId")
-	private Group group;
+	@OneToMany(mappedBy = "region")
+	private List<Vehicle> vehicles;
 	
 }

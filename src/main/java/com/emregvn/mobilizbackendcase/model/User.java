@@ -1,5 +1,7 @@
 package com.emregvn.mobilizbackendcase.model;
 
+import java.util.List;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,5 +15,9 @@ public class User {
 	private int companyId;
 	private String companyName;
 	private String role;
+	private List<String> regionAuthorizations;
+	private List<String> fleetAuthorizations;
+	private List<String> groupAuthorizations;
+	private List<String> vehicleAuthorizations;
 	
 }

@@ -34,5 +34,14 @@ public class Company {
 	
 	@OneToMany(mappedBy = "company")
 	private List<Vehicle> vehicles;
+	
+	@OneToMany(mappedBy = "company")
+	private List<Region> regions;
+	
+	@OneToMany(mappedBy = "company")
+	private List<Fleet> fleets;
+	
+	@OneToMany(mappedBy = "company")
+	private List<Group> groups;
 
 }

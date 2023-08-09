@@ -34,6 +34,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 				.surname(user.getSurname())
 				.companyId(user.getCompanyId())
 				.companyName(user.getCompanyName())
+				.regionAuthorizations(user.getRegionAuthorizations())
+				.fleetAuthorizations(user.getFleetAuthorizations())
+				.groupAuthorizations(user.getGroupAuthorizations())
+				.vehicleAuthorizations(user.getVehicleAuthorizations())
 				.authorities(List.of(new SimpleGrantedAuthority(user.getRole())))
 				.build();
 		
@@ -53,6 +57,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 		
 		Gson gson = new Gson();
 		User user = gson.fromJson(header, User.class);
+		
 		return Optional.of(user);
 	}
 	

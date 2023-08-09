@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.emregvn.mobilizbackendcase.entity.Company;
+import com.emregvn.mobilizbackendcase.entity.Fleet;
+import com.emregvn.mobilizbackendcase.entity.Group;
+import com.emregvn.mobilizbackendcase.entity.Region;
 import com.emregvn.mobilizbackendcase.entity.Vehicle;
 
 @Repository
@@ -14,10 +17,12 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
 	
 	Optional<Vehicle> findByPlateNumber(String plateNumber);
 	
-	List<Vehicle> findByGroup(String group);
-	
-	List<Vehicle> findByFleet(String fleet);
-	
 	List<Vehicle> findByCompany(Company company);
+	
+	List<Vehicle> findByRegion(Region region);
+	
+	List<Vehicle> findByFleet(Fleet fleet);
+	
+	List<Vehicle> findByGroup(Group group);
 	
 }
