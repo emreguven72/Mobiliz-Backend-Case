@@ -51,6 +51,11 @@ public class VehicleController {
 		return vehicleService.getByGroup();
 	}
 	
+	@GetMapping("/get-vehicle-tree")
+	public String getVehicleTreeByCompany() {
+		return vehicleService.getVehicleTreeByCompany();
+	}
+	
 	@PostMapping("/create")
 	public void create(@RequestBody @Validated CreateVehicleRequest createVehicleRequest) {
 		vehicleService.create(createVehicleRequest);

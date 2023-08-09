@@ -171,6 +171,72 @@ public class VehicleServiceImpl implements VehicleService {
 		
 		return vehicleResponse;
 	}
+	
+	@Override
+	public String getVehicleTreeByCompany() {
+		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Company company = companyService.getByCompanyName(principal.getCompanyName()).orElseThrow();
+		
+		System.out.print(company.getCompanyName() + "\r");
+		company.getRegions().forEach(r -> {
+			System.out.print(" |-" + r.getName() + "\r");
+			r.getVehicles().forEach(v -> {
+				if(v.getFleet() == null && v.getGroup() == null) {
+					System.out.print(" |   |-" + v.getPlateNumber() + "\r");
+				}
+			});
+			r.getFleets().forEach(f -> {
+				System.out.print(" |   |-" + f.getName() + "\r");
+				f.getVehicles().forEach(v -> {
+					if(v.getGroup() == null) {
+						System.out.print(" |      |-" + v.getPlateNumber() + "\r");
+					}
+				});
+				f.getGroups().forEach(g -> {
+					System.out.print(" |      |-" + g.getName() + "\r");
+					g.getVehicles().forEach(v -> {
+						System.out.print(" |         |-" + v.getPlateNumber() + "\r");
+					});
+				});
+			});
+		});
+		company.getVehicles().forEach(v -> {
+			if(v.getRegion() == null && v.getFleet() == null && v.getGroup() == null) {
+				System.out.print(" |-" + v.getPlateNumber() + "\r");
+			}
+		});
+		System.out.print("\r");
+		
+		
+		
+//		Mulakat A.S.
+//		 |-Marmara
+//		 |   |-Istanbul Filo
+//		 |      |-Avrupa Grubu
+//		 |         |-34BE030
+//		 |		   |-34EM141
+//		 |   |-Edirne Filo
+//		 |      |-08EC421
+//		 |      |-08AB576
+//		 |-Ege
+//		    |-27AB321
+		
+		String vehicleTree = """
+			%s
+			 |-%s
+			 |   |-%s
+			 |      |-%s
+			 |         |-34BE030
+			 |		   |-34EM141
+			 |   |-Edirne Filo
+			 |      |-08EC421
+			 |      |-08AB576
+			 |-Ege
+			    |-27AB321
+		""";
+		
+		return String.format(vehicleTree, "Mulakat A.S.", "Marmara", "Istanbul Filo", "Avrupa Grubu");
+	}
 
 	@Override
 	public void create(CreateVehicleRequest createVehicleRequest) {

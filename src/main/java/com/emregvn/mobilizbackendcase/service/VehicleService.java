@@ -19,6 +19,8 @@ public interface VehicleService {
 	
 	List<GetVehicleResponse> getByGroup();
 	
+	String getVehicleTreeByCompany();
+	
 	void create(CreateVehicleRequest createVehicleRequest);
 	
 	void update(UpdateVehicleRequest updateVehicleRequest);
