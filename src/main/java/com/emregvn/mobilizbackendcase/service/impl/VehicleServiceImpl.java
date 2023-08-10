@@ -1,5 +1,6 @@
 package com.emregvn.mobilizbackendcase.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,16 +92,25 @@ public class VehicleServiceImpl implements VehicleService {
 
 	@Override
 	public List<GetVehicleResponse> getByFleet() {
+		//Önce kullanıcının hangi filolarda yetkili olduğunu bulup sonrasında bu filolara ait tüm araçların kayıtlarını döndüren fonksiyon.
+		
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		List<Fleet> fleet = fleetService.getByName(principal.getFleetAuthorizations().get(0))
-				.stream().filter(f -> f.getCompany().getCompanyId() == principal.getCompanyId()).toList();
+		List<Fleet> authorizedFleets = new ArrayList<Fleet>();
+		principal.getFleetAuthorizations().forEach(fleetText -> {
+			List<Fleet> fleet = fleetService.getByName(fleetText)
+					.stream().filter(r -> r.getCompany().getCompanyId() == principal.getCompanyId()).toList();
+			authorizedFleets.add(fleet.get(0));
+		});
 		
-		List<Vehicle> vehicles = vehicleRepository.findByFleet(fleet.get(0));
+		List<Vehicle> vehicles = new ArrayList<Vehicle>();
+		authorizedFleets.forEach(fleet -> {
+			vehicleRepository.findByFleet(fleet).forEach(v -> {
+				vehicles.add(v);
+			});
+		});
 		
-		List<Vehicle> filteredVehicles = vehicles.stream().filter(vehicle -> vehicle.getCompany().getCompanyId() == principal.getCompanyId()).toList();
-		
-		List<GetVehicleResponse> vehicleResponse = filteredVehicles.stream()
+		List<GetVehicleResponse> vehicleResponse = vehicles.stream()
 				.map(vehicle -> GetVehicleResponse.builder()
 						.vehicleId(vehicle.getVehicleId())
 						.plateNumber(vehicle.getPlateNumber())
@@ -120,16 +130,25 @@ public class VehicleServiceImpl implements VehicleService {
 	
 	@Override
 	public List<GetVehicleResponse> getByRegion() {
+		//Önce kullanıcının hangi bölgelerde yetkili olduğunu bulup sonrasında bu bölgelere ait tüm araçların kayıtlarını döndüren fonksiyon.
+		
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		List<Region> region = regionService.getByName(principal.getRegionAuthorizations().get(0))
-				.stream().filter(r -> r.getCompany().getCompanyId() == principal.getCompanyId()).toList();
+		List<Region> authorizedRegions = new ArrayList<Region>();
+		principal.getRegionAuthorizations().forEach(regionText -> {
+			List<Region> region = regionService.getByName(regionText)
+					.stream().filter(r -> r.getCompany().getCompanyId() == principal.getCompanyId()).toList();
+			authorizedRegions.add(region.get(0));
+		});
 		
-		List<Vehicle> vehicles = vehicleRepository.findByRegion(region.get(0));
+		List<Vehicle> vehicles = new ArrayList<Vehicle>();
+		authorizedRegions.forEach(region -> {
+			vehicleRepository.findByRegion(region).forEach(v -> {
+				vehicles.add(v);
+			});
+		});
 		
-		List<Vehicle> filteredVehicles = vehicles.stream().filter(vehicle -> vehicle.getCompany().getCompanyId() == principal.getCompanyId()).toList();
-		
-		List<GetVehicleResponse> vehicleResponse = filteredVehicles.stream()
+		List<GetVehicleResponse> vehicleResponse = vehicles.stream()
 				.map(vehicle -> GetVehicleResponse.builder()
 						.vehicleId(vehicle.getVehicleId())
 						.plateNumber(vehicle.getPlateNumber())
@@ -177,49 +196,74 @@ public class VehicleServiceImpl implements VehicleService {
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Company company = companyService.getByCompanyName(principal.getCompanyName()).orElseThrow();
 		
-		System.out.print(company.getCompanyName() + "\r");
+		//182 - 208 satırları arasında request'in X-User headerı içerisinden çektiğim değerleri kullanarak kullanıcının
+		//bölge,filo,grup ve araçlardan hangilerinde yetkili olduğunu buluyorum.
+		List<Region> authorizedRegions = new ArrayList<Region>();
+		principal.getRegionAuthorizations().forEach(regionText -> {
+			List<Region> region = regionService.getByName(regionText)
+					.stream().filter(r -> r.getCompany().getCompanyId() == principal.getCompanyId()).toList();
+			authorizedRegions.add(region.get(0));
+		});
+		
+		List<Fleet> authorizedFleets = new ArrayList<Fleet>();
+		principal.getFleetAuthorizations().forEach(fleetText -> {
+			List<Fleet> fleet = fleetService.getByName(fleetText)
+					.stream().filter(f -> f.getCompany().getCompanyId() == principal.getCompanyId()).toList();
+			authorizedFleets.add(fleet.get(0));
+		});
+		
+		List<Group> authorizedGroups = new ArrayList<Group>();
+		principal.getGroupAuthorizations().forEach(groupText -> {
+			List<Group> group = groupService.getByName(groupText)
+					.stream().filter(g -> g.getCompany().getCompanyId() == principal.getCompanyId()).toList();
+			authorizedGroups.add(group.get(0));
+		});
+		
+		List<Vehicle> authorizedVehicles = new ArrayList<Vehicle>();
+		principal.getVehicleAuthorizations().forEach(vehicleText -> {
+			List<Vehicle> vehicle = vehicleRepository.findByPlateNumber(vehicleText)
+					.stream().filter(v -> v.getCompany().getCompanyId() == principal.getCompanyId()).toList();
+			authorizedVehicles.add(vehicle.get(0));
+		});
+		
+		//212 - 248 satırları arasında yukarıda bulduğum bölge,filo,grup,araç yetkilendirmelerini kullanarak kullanıcının
+		//hangi araç kayıtlarına erişebileceğini belirledikten sonra bu araç kayıtlarını bir ağaç şeklinde kullanıcıya döndürüyorum.
 		globalVehicleTree += company.getCompanyName() + "\r";
 		company.getRegions().forEach(r -> {
-			if(!r.getVehicles().isEmpty()) {
-				System.out.print(" |-" + r.getName() + "\r");
+			if(!r.getVehicles().isEmpty() && (principal.getRole().equals("CompanyAdmin") || authorizedRegions.contains(r))) {
 				globalVehicleTree += " |-" + r.getName() + "\r";
 			}
 			r.getVehicles().forEach(v -> {
-				if(v.getFleet() == null && v.getGroup() == null) {
-					System.out.print(" |   |-" + v.getPlateNumber() + "\r");
+				if(v.getFleet() == null && v.getGroup() == null && (principal.getRole().equals("CompanyAdmin") || authorizedRegions.contains(r) || authorizedVehicles.contains(v))) {
 					globalVehicleTree += " |   |-" + v.getPlateNumber() + "\r";
 				}
 			});
 			r.getFleets().forEach(f -> {
-				if(!f.getVehicles().isEmpty()) {					
-					System.out.print(" |   |-" + f.getName() + "\r");
+				if(!f.getVehicles().isEmpty() && (principal.getRole().equals("CompanyAdmin") || authorizedRegions.contains(r) || authorizedFleets.contains(f))) {					
 					globalVehicleTree += " |   |-" + f.getName() + "\r";
 				}
 				f.getVehicles().forEach(v -> {
-					if(v.getGroup() == null) {
-						System.out.print(" |      |-" + v.getPlateNumber() + "\r");
+					if(v.getGroup() == null && (principal.getRole().equals("CompanyAdmin") || authorizedRegions.contains(r) || authorizedFleets.contains(f) || authorizedVehicles.contains(v))) {
 						globalVehicleTree += " |      |-" + v.getPlateNumber() + "\r";
 					}
 				});
 				f.getGroups().forEach(g -> {
-					if(!g.getVehicles().isEmpty()) {						
-						System.out.print(" |      |-" + g.getName() + "\r");
+					if(!g.getVehicles().isEmpty() && (principal.getRole().equals("CompanyAdmin") || authorizedRegions.contains(r) || authorizedFleets.contains(f) || authorizedGroups.contains(g))) {						
 						globalVehicleTree += " |      |-" + g.getName() + "\r";
 					}
 					g.getVehicles().forEach(v -> {
-						System.out.print(" |         |-" + v.getPlateNumber() + "\r");
-						globalVehicleTree += " |         |-" + v.getPlateNumber() + "\r";
+						if(principal.getRole().equals("CompanyAdmin") || authorizedRegions.contains(r) || authorizedFleets.contains(f) || authorizedGroups.contains(g) || authorizedVehicles.contains(v)) {
+							globalVehicleTree += " |         |-" + v.getPlateNumber() + "\r";
+						}
 					});
 				});
 			});
 		});
 		company.getVehicles().forEach(v -> {
-			if(v.getRegion() == null && v.getFleet() == null && v.getGroup() == null) {
-				System.out.print(" |-" + v.getPlateNumber() + "\r");
+			if(v.getRegion() == null && v.getFleet() == null && v.getGroup() == null && principal.getRole().equals("CompanyAdmin")) {
 				globalVehicleTree += " |-" + v.getPlateNumber() + "\r";
 			}
 		});
-		System.out.print("\r");
 		
 		String vehicleTree = globalVehicleTree;
 		globalVehicleTree = "";
@@ -232,6 +276,9 @@ public class VehicleServiceImpl implements VehicleService {
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Company company = companyService.getByCompanyName(principal.getCompanyName()).orElseThrow();
 		
+		//262 - 269 satırları arasında yaratılan aracın bölge,filo ve grup değerlerini veritabanından çekme işlemini yapıyorum.
+		//tüm bunları liste şeklinde çekmemin nedeni veritabanında her şirket için aynı isimlerde bölgeler,filolar ve gruplar olabilir.
+		//Önce liste şeklinde bütün aynı isme ait değerleri çekip sonrasında kullanıcının kayıtlı olduğu şirkete göre filtreliyorum.
 		List<Region> region = regionService.getByName(createVehicleRequest.getRegionName())
 				.stream().filter(r -> r.getCompany().getCompanyId() == principal.getCompanyId()).toList();
 				
@@ -293,6 +340,7 @@ public class VehicleServiceImpl implements VehicleService {
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Vehicle vehicle = vehicleRepository.findById(vehicleId).orElseThrow();
 		
+		//Kullanıcının araç üzerinde yetkisi olup olmadığını sorgulayan fonksiyon.
 		vehicleServiceBusinessRules.checkIfUserAuthorized(principal, vehicle);
 		
 		vehicleRepository.delete(vehicle);

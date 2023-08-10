@@ -34,6 +34,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 				.surname(user.getSurname())
 				.companyId(user.getCompanyId())
 				.companyName(user.getCompanyName())
+				.role(user.getRole())
 				.regionAuthorizations(user.getRegionAuthorizations())
 				.fleetAuthorizations(user.getFleetAuthorizations())
 				.groupAuthorizations(user.getGroupAuthorizations())
