@@ -21,5 +21,4 @@ public class FleetServiceImpl implements FleetService {
 		return fleetRepository.findByName(name);
 	}
 	
-
 }

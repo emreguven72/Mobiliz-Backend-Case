@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class VehicleServiceImpl implements VehicleService {
+	//Dependency Injection
 	private final VehicleRepository vehicleRepository;
 	private final CompanyService companyService;
 	private final RegionService regionService;
@@ -37,6 +38,7 @@ public class VehicleServiceImpl implements VehicleService {
 	private final VehicleServiceBusinessRules vehicleServiceBusinessRules;
 	String globalVehicleTree = "";
 	
+	//Kullanıcının verdiği plaka numarasına ait aracı bulup kullanıcıya döndüren fonksiyon.
 	@Override
 	public Optional<GetVehicleResponse> getByPlateNumber(String plateNumber) {
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -61,6 +63,7 @@ public class VehicleServiceImpl implements VehicleService {
 		return Optional.of(vehicleResponse);
 	}
 
+	//Önce kullanıcının hangi gruplarda yetkili olduğunu bulup sonrasında bu gruplara ait tüm araçların kayıtlarını döndüren fonksiyon.
 	@Override
 	public List<GetVehicleResponse> getByGroup() {
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -90,10 +93,9 @@ public class VehicleServiceImpl implements VehicleService {
 		return vehicleResponse;
 	}
 
+	//Önce kullanıcının hangi filolarda yetkili olduğunu bulup sonrasında bu filolara ait tüm araçların kayıtlarını döndüren fonksiyon.
 	@Override
 	public List<GetVehicleResponse> getByFleet() {
-		//Önce kullanıcının hangi filolarda yetkili olduğunu bulup sonrasında bu filolara ait tüm araçların kayıtlarını döndüren fonksiyon.
-		
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
 		List<Fleet> authorizedFleets = new ArrayList<Fleet>();
@@ -128,10 +130,9 @@ public class VehicleServiceImpl implements VehicleService {
 		return vehicleResponse;
 	}
 	
+	//Önce kullanıcının hangi bölgelerde yetkili olduğunu bulup sonrasında bu bölgelere ait tüm araçların kayıtlarını döndüren fonksiyon.
 	@Override
 	public List<GetVehicleResponse> getByRegion() {
-		//Önce kullanıcının hangi bölgelerde yetkili olduğunu bulup sonrasında bu bölgelere ait tüm araçların kayıtlarını döndüren fonksiyon.
-		
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
 		List<Region> authorizedRegions = new ArrayList<Region>();
@@ -166,6 +167,7 @@ public class VehicleServiceImpl implements VehicleService {
 		return vehicleResponse;
 	}
 
+	//Kullanıcının hangi şirkete kayıtlı olduğunu bulduktan sonra o şirkete ait tüm araçları döndüren fonksiyon.
 	@Override
 	public List<GetVehicleResponse> getByCompany() {
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -191,12 +193,16 @@ public class VehicleServiceImpl implements VehicleService {
 		return vehicleResponse;
 	}
 	
+	//Önce kullanıcının hangi bölgelerde,filolarda,gruplarda ve araçlarda yetkili olduğunu bulup sonrasında bu bilgileri 
+	//bir ağaç yapısına dönüştürüp bir String içerisinde tutan ve kullanıcıya döndüren fonksiyon.
 	@Override
 	public String getVehicleTreeByCompany() {
+		//202 - 203 satırları arasında hangi kullanıcının giriş yaptığını(Authentication) SecurityContextHolder nesnesinden çekip
+		//kullanıcının tüm bilgilerini ve ayrıca kayıtlı olduğu şirkete dair tüm bilgileri buluyorum.
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Company company = companyService.getByCompanyName(principal.getCompanyName()).orElseThrow();
 		
-		//182 - 208 satırları arasında request'in X-User headerı içerisinden çektiğim değerleri kullanarak kullanıcının
+		//207 - 233 satırları arasında request'in X-User headerı içerisinden çektiğim değerleri kullanarak kullanıcının
 		//bölge,filo,grup ve araçlardan hangilerinde yetkili olduğunu buluyorum.
 		List<Region> authorizedRegions = new ArrayList<Region>();
 		principal.getRegionAuthorizations().forEach(regionText -> {
@@ -226,11 +232,12 @@ public class VehicleServiceImpl implements VehicleService {
 			authorizedVehicles.add(vehicle.get(0));
 		});
 		
-		//212 - 248 satırları arasında yukarıda bulduğum bölge,filo,grup,araç yetkilendirmelerini kullanarak kullanıcının
+		//237 - 275 satırları arasında yukarıda bulduğum bölge,filo,grup,araç yetkilendirmelerini kullanarak kullanıcının
 		//hangi araç kayıtlarına erişebileceğini belirledikten sonra bu araç kayıtlarını bir ağaç şeklinde kullanıcıya döndürüyorum.
 		globalVehicleTree += company.getCompanyName() + "\r";
 		company.getRegions().forEach(r -> {
-			if(!r.getVehicles().isEmpty() && (principal.getRole().equals("CompanyAdmin") || authorizedRegions.contains(r))) {
+			boolean isUserAuthorizedToThisRegion = !r.getVehicles().isEmpty() && (principal.getRole().equals("CompanyAdmin") || authorizedRegions.contains(r));
+			if(isUserAuthorizedToThisRegion) {
 				globalVehicleTree += " |-" + r.getName() + "\r";
 			}
 			r.getVehicles().forEach(v -> {
@@ -239,7 +246,8 @@ public class VehicleServiceImpl implements VehicleService {
 				}
 			});
 			r.getFleets().forEach(f -> {
-				if(!f.getVehicles().isEmpty() && (principal.getRole().equals("CompanyAdmin") || authorizedRegions.contains(r) || authorizedFleets.contains(f))) {					
+				boolean isUserAuthorizedToThisFleet = !f.getVehicles().isEmpty() && (principal.getRole().equals("CompanyAdmin") || authorizedRegions.contains(r) || authorizedFleets.contains(f));
+				if(isUserAuthorizedToThisFleet) {					
 					globalVehicleTree += " |   |-" + f.getName() + "\r";
 				}
 				f.getVehicles().forEach(v -> {
@@ -248,7 +256,8 @@ public class VehicleServiceImpl implements VehicleService {
 					}
 				});
 				f.getGroups().forEach(g -> {
-					if(!g.getVehicles().isEmpty() && (principal.getRole().equals("CompanyAdmin") || authorizedRegions.contains(r) || authorizedFleets.contains(f) || authorizedGroups.contains(g))) {						
+					boolean isUserAuthorizedToThisGroup = !g.getVehicles().isEmpty() && (principal.getRole().equals("CompanyAdmin") || authorizedRegions.contains(r) || authorizedFleets.contains(f) || authorizedGroups.contains(g));
+					if(isUserAuthorizedToThisGroup) {						
 						globalVehicleTree += " |      |-" + g.getName() + "\r";
 					}
 					g.getVehicles().forEach(v -> {
@@ -271,12 +280,14 @@ public class VehicleServiceImpl implements VehicleService {
 		return vehicleTree;
 	}
 
+	//Kullanıcının yeni araç yaratmasını sağlayan fonksiyon.
+	//WebSecurityConfiguration classında yazdığım kodlar sayesinde buraya sadece CompanyAdmin rolü bulunan kullanıcılar erişebilir.
 	@Override
 	public void create(CreateVehicleRequest createVehicleRequest) {
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Company company = companyService.getByCompanyName(principal.getCompanyName()).orElseThrow();
 		
-		//262 - 269 satırları arasında yaratılan aracın bölge,filo ve grup değerlerini veritabanından çekme işlemini yapıyorum.
+		//293 - 300 satırları arasında yaratılan aracın bölge,filo ve grup değerlerini veritabanından çekme işlemini yapıyorum.
 		//tüm bunları liste şeklinde çekmemin nedeni veritabanında her şirket için aynı isimlerde bölgeler,filolar ve gruplar olabilir.
 		//Önce liste şeklinde bütün aynı isme ait değerleri çekip sonrasında kullanıcının kayıtlı olduğu şirkete göre filtreliyorum.
 		List<Region> region = regionService.getByName(createVehicleRequest.getRegionName())
@@ -304,6 +315,8 @@ public class VehicleServiceImpl implements VehicleService {
 		vehicleRepository.save(vehicle);
 	}
 
+	//Kullanıcının kayıtlı bir aracın bilgilerini değiştirmesini sağlayan fonksiyon.
+	//WebSecurityConfiguration classında yazdığım kodlar sayesinde buraya sadece CompanyAdmin rolü bulunan kullanıcılar erişebilir.
 	@Override
 	public void update(UpdateVehicleRequest updateVehicleRequest) {
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -335,6 +348,8 @@ public class VehicleServiceImpl implements VehicleService {
 		
 	}
 
+	//Kullanıcının kayıtlı bir aracı silmesini sağlayan fonksiyon.
+	//WebSecurityConfiguration classında yazdığım kodlar sayesinde buraya sadece CompanyAdmin rolü bulunan kullanıcılar erişebilir.
 	@Override
 	public void delete(int vehicleId) {
 		UserPrincipal principal = (UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();

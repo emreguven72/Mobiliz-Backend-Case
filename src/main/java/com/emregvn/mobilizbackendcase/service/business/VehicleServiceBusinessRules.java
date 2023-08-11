@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class VehicleServiceBusinessRules {
 
+	//Kullanıcının üzerinde işlem yapmaya çalıştığı araç ile kullanıcının kayıtlı olduğu şirketi karşılaştırıp ona göre işleme izin veren fonksiyon
 	public void checkIfUserAuthorized(UserPrincipal principal, Vehicle vehicle) {
 		if(principal.getCompanyId() != vehicle.getCompany().getCompanyId()) {
 			throw new RuntimeException("You are not able to see this vehicle or do any changes on this vehicle");

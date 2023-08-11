@@ -44,11 +44,13 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 		
 		UserPrincipalAuthenticationToken authenticationToken = new UserPrincipalAuthenticationToken(principal);
 		
+		//Giriş yapan kullanıcının bilgileri SecurityContextHolder nesnesi içerisinde saklanır.
 		SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 		
 		filterChain.doFilter(request, response);
 	}
 
+	//Kullanıcının API'ye attığı istek içerisinden X-User headerını çekip içerisindeki bilgilerle bir User classı yaratan fonksiyon.
 	private Optional<User> extractXUserHeaderFromRequest(HttpServletRequest request) {
 		var header = request.getHeader("X-User");
 		
