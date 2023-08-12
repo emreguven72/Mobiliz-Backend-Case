@@ -9,6 +9,8 @@ public interface CompanyService {
 
 	List<Company> getAll();
 	
+	Optional<Company> getById(int id);
+	
 	Optional<Company> getByCompanyName(String name);
 	
 }

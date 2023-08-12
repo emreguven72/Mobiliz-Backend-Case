@@ -1,0 +1,33 @@
+Farklı kullanıcılar için X-User headerları.
+
+Mülakat A.Ş. CompanyAdmin Kullanıcısı
+{ "userId":1, "name":"Huseyin", "surname":"Ates", "companyId":1, "companyName":"Mulakat A.S.", "role":"CompanyAdmin","regionAuthorizations": [] , "fleetAuthorizations": [], "groupAuthorizations": [], "vehicleAuthorizations": []}
+
+Mulakat A.S. Standart kullanıcı.Marmara ve Ege bölgelerinde yetkili.
+{ "userId":2, "name":"Emre", "surname":"Guven", "companyId":1, "companyName":"Mulakat A.S.", "role":"Standard","regionAuthorizations": ["Marmara","Ege"] , "fleetAuthorizations": [], "groupAuthorizations": [], "vehicleAuthorizations": []}
+
+Mulakat A.S. Standart kullanıcı.Marmara bölgesinde yetkili.
+{ "userId":2, "name":"Emre", "surname":"Guven", "companyId":1, "companyName":"Mulakat A.S.", "role":"Standard","regionAuthorizations": ["Marmara"] , "fleetAuthorizations": [], "groupAuthorizations": [], "vehicleAuthorizations": []}
+
+Mulakat A.S. Standart kullanıcı.Ege bölgesinde yetkili.
+{ "userId":2, "name":"Emre", "surname":"Guven", "companyId":1, "companyName":"Mulakat A.S.", "role":"Standard","regionAuthorizations": ["Ege"] , "fleetAuthorizations": [], "groupAuthorizations": [], "vehicleAuthorizations": []}
+
+Mulakat A.S. Standart kullanıcı.İstanbul Filosunda yetkili.
+{ "userId":2, "name":"Emre", "surname":"Guven", "companyId":1, "companyName":"Mulakat A.S.", "role":"Standard", "regionAuthorizations": [] , "fleetAuthorizations": ["Istanbul Filo"], "groupAuthorizations": [], "vehicleAuthorizations": []}
+
+Mulakat A.S. Standart kullanıcı.Avrupa Grubunda yetkili.
+{ "userId":2, "name":"Emre", "surname":"Guven", "companyId":1, "companyName":"Mulakat A.S.", "role":"Standard", "regionAuthorizations": [] ,  "fleetAuthorizations": [], "groupAuthorizations": ["Avrupa Grubu"], "vehicleAuthorizations": []}
+
+Mulakat A.S. Standart kullanıcı.12ABC345 ve 34KRM123 plakalı araçlarda yetkili.
+{ "userId":2, "name":"Emre", "surname":"Guven", "companyId":1, "companyName":"Mulakat A.S.", "role":"Standard", "regionAuthorizations": [] ,  "fleetAuthorizations": [], "groupAuthorizations": [], "vehicleAuthorizations": ["12ABC345","34KRM123"]}
+
+
+
+----------------------------------------------------------------------------------------------
+
+
+Diger A.S. CompanyAdmin kullanıcısı
+{ "userId":3, "name":"Mustafa", "surname":"Guven", "companyId":2, "companyName":"Diger A.S.", "role":"CompanyAdmin","regionAuthorizations": [] , "fleetAuthorizations": [], "groupAuthorizations": [], "vehicleAuthorizations": []}
+
+Diger A.S. Standart kullanıcı.34MBZ123 plakalı araçta yetkili.
+{ "userId":4, "name":"Omer", "surname":"Guven", "companyId":2, "companyName":"Diger A.S.", "role":"Standard", "regionAuthorizations": [] ,  "fleetAuthorizations": [], "groupAuthorizations": [], "vehicleAuthorizations": ["34MBZ123"]}

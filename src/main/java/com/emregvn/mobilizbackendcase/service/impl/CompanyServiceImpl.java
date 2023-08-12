@@ -26,6 +26,9 @@ public class CompanyServiceImpl implements CompanyService {
 		return Optional.of(companyRepository.findByCompanyName(name).orElseThrow());
 	}
 
-	
+	@Override
+	public Optional<Company> getById(int id) {
+		return Optional.of(companyRepository.findById(id).orElseThrow());
+	}
 	
 }

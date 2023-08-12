@@ -1,25 +1,17 @@
 package com.emregvn.mobilizbackendcase.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.emregvn.mobilizbackendcase.model.requests.CreateVehicleRequest;
 import com.emregvn.mobilizbackendcase.model.requests.UpdateVehicleRequest;
 import com.emregvn.mobilizbackendcase.model.responses.GetVehicleResponse;
+import com.emregvn.mobilizbackendcase.model.responses.GetVehicleTreeResponse;
 
 public interface VehicleService {
-
-	Optional<GetVehicleResponse> getByPlateNumber(String plateNumber);
 	
-	List<GetVehicleResponse> getByCompany();
+	List<GetVehicleResponse> getByAuthorizations(); 
 	
-	List<GetVehicleResponse> getByRegion();
-	
-	List<GetVehicleResponse> getByFleet();
-	
-	List<GetVehicleResponse> getByGroup();
-	
-	String getVehicleTreeByCompany();
+	List<GetVehicleTreeResponse> getVehicleTreeByCompany();
 	
 	void create(CreateVehicleRequest createVehicleRequest);
 	

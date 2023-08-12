@@ -31,10 +31,6 @@ public class UpdateVehicleRequest {
 	@NotNull
 	private int modelYear;
 	
-	private String regionName;
-	
-	private String fleetName;
-	
 	private String groupName;
 	
 }

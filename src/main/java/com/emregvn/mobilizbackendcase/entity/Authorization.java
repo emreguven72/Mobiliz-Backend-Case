@@ -1,7 +1,5 @@
 package com.emregvn.mobilizbackendcase.entity;
 
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,29 +20,20 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "fleets")
-public class Fleet {
+@Table(name = "authorizations")
+public class Authorization {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "fleetId")
-	private int fleetId;
-	
-	@Column(name = "name")
-	private String name;
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+	@Column(name = "authorizationId")
+	private int authorizationId;
 	
 	@ManyToOne()
-	@JoinColumn(name = "companyId")
-	private Company company;
+	@JoinColumn(name = "groupId")
+	private Group group;
 	
 	@ManyToOne()
-	@JoinColumn(name = "regionId")
-	private Region region;
-	
-	@OneToMany(mappedBy = "fleet")
-	private List<Group> groups;
-	
-	@OneToMany(mappedBy = "fleet")
-	private List<Vehicle> vehicles;
+	@JoinColumn(name = "userId")
+	private User user;
 	
 }

@@ -1,5 +1,6 @@
 package com.emregvn.mobilizbackendcase.model.responses;
 
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,9 +15,7 @@ public class GetVehicleResponse {
 	private String brand;
 	private String model;
 	private int modelYear;
-	private String companyName;
-	private String regionName;
-	private String fleetName;
-	private String groupName;
+	private GetCompanyResponse company;
+	private GetGroupResponse group;
 
 }

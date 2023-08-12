@@ -55,14 +55,6 @@ public class Vehicle {
 	private Company company;
 	
 	@ManyToOne()
-	@JoinColumn(name = "regionId")
-	private Region region;
-	
-	@ManyToOne()
-	@JoinColumn(name = "fleetId")
-	private Fleet fleet;
-	
-	@ManyToOne()
 	@JoinColumn(name = "groupId")
 	private Group group;
 	

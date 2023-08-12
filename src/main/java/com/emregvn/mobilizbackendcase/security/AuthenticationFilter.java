@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.emregvn.mobilizbackendcase.model.User;
+import com.emregvn.mobilizbackendcase.entity.User;
+import com.emregvn.mobilizbackendcase.service.UserService;
 import com.google.gson.Gson;
 
 import jakarta.servlet.FilterChain;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class AuthenticationFilter extends OncePerRequestFilter {
+	private final UserService userService;
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -32,13 +34,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 				.userId(user.getUserId())
 				.name(user.getName())
 				.surname(user.getSurname())
-				.companyId(user.getCompanyId())
-				.companyName(user.getCompanyName())
 				.role(user.getRole())
-				.regionAuthorizations(user.getRegionAuthorizations())
-				.fleetAuthorizations(user.getFleetAuthorizations())
-				.groupAuthorizations(user.getGroupAuthorizations())
-				.vehicleAuthorizations(user.getVehicleAuthorizations())
+				.company(user.getCompany())
+				.authorizations(user.getAuthorizations())
 				.authorities(List.of(new SimpleGrantedAuthority(user.getRole())))
 				.build();
 		
@@ -59,7 +57,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 		}
 		
 		Gson gson = new Gson();
-		User user = gson.fromJson(header, User.class);
+		User jsonObject = gson.fromJson(header, User.class);
+		User user = userService.getById(jsonObject.getUserId()).orElseThrow();
 		
 		return Optional.of(user);
 	}

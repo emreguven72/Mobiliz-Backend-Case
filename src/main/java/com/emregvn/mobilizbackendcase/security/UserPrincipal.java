@@ -6,6 +6,9 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.emregvn.mobilizbackendcase.entity.Authorization;
+import com.emregvn.mobilizbackendcase.entity.Company;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,13 +19,9 @@ public class UserPrincipal implements UserDetails {
 	private final int userId;
 	private final String name;
 	private String surname;
-	private int companyId;
-	private String companyName;
 	private String role;
-	private List<String> regionAuthorizations;
-	private List<String> fleetAuthorizations;
-	private List<String> groupAuthorizations;
-	private List<String> vehicleAuthorizations;
+	private Company company;
+	private List<Authorization> authorizations;
 	private final Collection<? extends GrantedAuthority> authorities;
 	
 	@Override

@@ -1,6 +1,7 @@
 package com.emregvn.mobilizbackendcase.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,11 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	public List<Group> getByName(String name) {
 		return groupRepository.findByName(name);
+	}
+
+	@Override
+	public Optional<Group> getById(int id) {
+		return Optional.of(groupRepository.findById(id).orElseThrow());
 	}
 
 }
